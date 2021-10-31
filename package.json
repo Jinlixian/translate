@@ -1,8 +1,9 @@
 {
-  "name": "translate",
+	"name": "translate",
 	"displayName": "vscode translate plugin for vscode",
 	"description": "vscode translate plugin for vscode",
-	"version": "0.1.0",
+	"publisher":"JinLixian",
+	"version": "v0.0.1",
 	"engines": {
 		"vscode": "^1.61.0"
 	},
