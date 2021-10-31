@@ -3,7 +3,7 @@
 	"displayName": "vscode translate plugin for vscode",
 	"description": "vscode translate plugin for vscode",
 	"publisher":"JinLixian",
-	"version": "v0.0.1",
+	"version": "v0.0.2",
 	"engines": {
 		"vscode": "^1.61.0"
 	},

@@ -55,7 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
 					//   }
 				}); // 'foo bar baz'
 				translation(_word).then(res => {
-					vscode.window.showInformationMessage( res.trans_result.dst  + " <= " + _word );
+					vscode.window.showInformationMessage(res.trans_result.dst + " <= " + _word);
 				});
 			}
 		})
@@ -74,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
 					//   }
 				}); // 'foo bar baz'
 				translation(_word).then(res => {
-					vscode.window.showInformationMessage( res.trans_result.dst  + " <= " + _word );
+					vscode.window.showInformationMessage(res.trans_result.dst + " <= " + _word);
 				});
 			}
 		})
@@ -90,13 +90,31 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('translate.translate', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from translate.translate!');
+		// vscode.window.showInformationMessage('hello from translate.translate!');
+		// translateWord();
+
+		const word = gWordText;
+		if (word) {
+			const camelize = humps.camelize(word); // 转换为驼峰 'forBarBaz'
+			const _word = humps.decamelize(camelize, {
+				separator: ' ',
+				// process: function (key, convert, options) {
+				// 	return /^[A-Z0-9_]+$/.test(key) ? key : convert(key, options);
+				//   }
+			}); // 'foo bar baz'
+			// vscode.window.showInformationMessage(_word + ' translate.translate!');
+			translation(_word).then(res => {
+				// vscode.window.showInformationMessage(_word + ' translate.translate!');
+				vscode.window.showInformationMessage(res.trans_result.dst + " <= " + _word);
+			});
+		}
 	});
 
 	context.subscriptions.push(disposable);
 
 
 }
+
 
 export class DoTran implements vscode.CodeActionProvider {
 
@@ -175,6 +193,22 @@ export class DoTran implements vscode.CodeActionProvider {
 
 }
 
+function translateWord() {
+	const word = gWordText;
+	if (word) {
+		const camelize = humps.camelize(word); // 转换为驼峰 'forBarBaz'
+		const _word = humps.decamelize(camelize, {
+			separator: ' ',
+			// process: function (key, convert, options) {
+			// 	return /^[A-Z0-9_]+$/.test(key) ? key : convert(key, options);
+			//   }
+		}); // 'foo bar baz'
+		translation(_word).then(res => {
+			vscode.window.showInformationMessage(res.trans_result.dst + " <= " + _word);
+		});
+	}
+
+}
 // export class Emojizer implements vscode.CodeActionProvider {
 
 // 	public static readonly providedCodeActionKinds = [
