@@ -8,7 +8,7 @@ import * as bTranslate from "baidu-translate-api";
 // const COMMAND = 'translate.command';
 const COMMAND_LINE = 'translate.line';
 const COMMAND_WORD = 'translate.word';
-var gLineText = '';
+
 var gWordText = '';
 const translation = (word: string) => {
 	const { translator: { targetLanguage, detection, fromLanguage } } = vscode.workspace.getConfiguration();
@@ -43,16 +43,12 @@ export function activate(context: vscode.ExtensionContext) {
 	// // );
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand(COMMAND_LINE, () => {
-			const word = gLineText;
-			// const word = gWordText;
+		vscode.commands.registerCommand(COMMAND_LINE, (line:string) => {
+			const word = line.trim();
 			if (word) {
 				const camelize = humps.camelize(word); // 转换为驼峰 'forBarBaz'
 				const _word = humps.decamelize(camelize, {
 					separator: ' ',
-					// process: function (key, convert, options) {
-					// 	return /^[A-Z0-9_]+$/.test(key) ? key : convert(key, options);
-					//   }
 				}); // 'foo bar baz'
 				translation(_word).then(res => {
 					vscode.window.showInformationMessage(res.trans_result.dst + " <= " + _word);
@@ -62,16 +58,11 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand(COMMAND_WORD, () => {
-			// const word = gLineText;
-			const word = gWordText;
-			if (word) {
-				const camelize = humps.camelize(word); // 转换为驼峰 'forBarBaz'
+		vscode.commands.registerCommand(COMMAND_WORD, (word:string) => {
+			if (word.trim()) {
+				const camelize = humps.camelize(word.trim()); // 转换为驼峰 'forBarBaz'
 				const _word = humps.decamelize(camelize, {
 					separator: ' ',
-					// process: function (key, convert, options) {
-					// 	return /^[A-Z0-9_]+$/.test(key) ? key : convert(key, options);
-					//   }
 				}); // 'foo bar baz'
 				translation(_word).then(res => {
 					vscode.window.showInformationMessage(res.trans_result.dst + " <= " + _word);
@@ -127,39 +118,12 @@ export class DoTran implements vscode.CodeActionProvider {
 		const trLine = new vscode.CodeAction(`Translate Line`, vscode.CodeActionKind.QuickFix);
 		const trWord = new vscode.CodeAction(`Translate Word`, vscode.CodeActionKind.QuickFix);
 		const start = range.start;
-		const line = document.lineAt(start.line);
-		// start.with
-		gWordText = document.getText(document.getWordRangeAtPosition(start));
-		// gWordText = document.getText(range);
-		// return
-		// line.text[start.character] === ':' && line.text[start.character + 1] === ')';
-
-		// const t = line.text;
-
-		gLineText = line.text;
-		trLine.command = { command: COMMAND_LINE, title: 'Learn more about emojis', tooltip: 'This will open the unicode emoji page.' };
-		trWord.command = { command: COMMAND_WORD, title: 'Learn more about emojis', tooltip: 'This will open the unicode emoji page.' };
-		// const moveDefinitionToCppfile = trLine;
-
-		// const word = document.getText(vscode.window.activeTextEditor?.selection);
-
-		// const word = "test";
-		// if (word) {
-		// 	const _world = humps.camelize(word);
-		// 	// return translation(_world).then(res => {
-		// 	// 	const content = new vscode.MarkdownString(`#### ${res.trans_result.dst}`);
-		// 	// 	return new vscode.Hover(content);
-		// 	// });
-
-		// 	 translation(_world).then(res => {
-		// 		const content = new vscode.MarkdownString(`#### ${res.trans_result.dst}`);
-		// 		return new vscode.Hover(content);
-		// 	});
-		// }
-
+		const line = document.lineAt(start.line).text;
+		trLine.command = { command: COMMAND_LINE, title: 'translate Line', arguments:[line] };
+		const word = 	document.getText(document.getWordRangeAtPosition(start));
+		trWord.command = { command: COMMAND_WORD, title: 'translate Word',  arguments:[word] };
+		gWordText = word;
 		return [
-			// replaceWithSmileyCatFix,	
-			// moveDefinitionToCppfile
 			trWord,
 			trLine,
 		];
@@ -207,7 +171,6 @@ function translateWord() {
 			vscode.window.showInformationMessage(res.trans_result.dst + " <= " + _word);
 		});
 	}
-
 }
 // export class Emojizer implements vscode.CodeActionProvider {
 
